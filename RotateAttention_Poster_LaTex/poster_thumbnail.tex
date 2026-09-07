@@ -1,0 +1,47 @@
+\documentclass[10pt]{article}
+\usepackage[paperwidth=3.2in,paperheight=2.56in,margin=0.04in,noheadfoot]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\fboxsep}{1.5pt}
+\setlength{\fboxrule}{0.6pt}
+
+% Palette sampled from the original baposter poster
+\definecolor{headercolor}{RGB}{185,215,230}
+\definecolor{bordercolor}{RGB}{161,230,230}
+\definecolor{mainblue}{RGB}{0,0,255}
+
+\begin{document}
+\noindent
+\fcolorbox{bordercolor}{white}{%
+  \parbox[t][2.40in][t]{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+    \raggedright
+    % ---- Title (black, like the poster title) ----
+    {\bfseries\fontsize{7.0}{8.0}\selectfont RotateAttention: RoPE-Aware Rotation \& Range Rectification}\\[1pt]
+    {\bfseries\fontsize{6.0}{7.0}\selectfont for INT4 Quantized Attention in Video Generation}\\[2pt]
+    {\fontsize{5.2}{6.0}\selectfont ECCV 2026 Submission \#1552\ \ $\cdot$\ \ Yaofu Liu, Wanli Lan, Jinxi Li, Binhang Yuan, Harry Yang}\\[3pt]
+
+    % ---- Poster-like header strips ----
+    \colorbox{headercolor}{\makebox[\dimexpr\linewidth-2\fboxsep][l]{{\color{mainblue}\bfseries\fontsize{5.4}{6.2}\selectfont\ Core Idea}}}
+    \par\vspace{1pt}
+    {\fontsize{5.4}{6.3}\selectfont Fast, accurate \textbf{INT4 FlashAttention} for 3D-RoPE video DiTs. 3D RoPE induces \emph{segmental} $\mathbf{Q}$/$\mathbf{K}$ outliers with cross-matrix symmetry; $\mathbf{P}\!\in\!(0,1]$ wastes \emph{half} of the INT4 range.\par}
+    \vspace{2pt}
+    \colorbox{headercolor}{\makebox[\dimexpr\linewidth-2\fboxsep][l]{{\color{mainblue}\bfseries\fontsize{5.4}{6.2}\selectfont\ Method}}}
+    \par\vspace{1pt}
+    {\fontsize{5.4}{6.3}\selectfont
+      \textbf{(1) RoPE-aware Rotation:} block-diagonal orthogonal $\mathbf{R}$ (Interleaved/Half) removes outliers at negligible cost.
+      \textbf{(2) Range-optimized $\mathbf{P}$:} $\tilde{\mathbf{P}}\!\in\!(-8,7]$ uses all 16 INT4 levels.
+      \textbf{(3) Hadamard $\mathbf{V}$:} merged offline into $\mathbf{W}_v,\mathbf{W}_o$ (zero cost).\par}
+    \vspace{2pt}
+    \colorbox{headercolor}{\makebox[\dimexpr\linewidth-2\fboxsep][l]{{\color{mainblue}\bfseries\fontsize{5.4}{6.2}\selectfont\ Results}}}
+    \par\vspace{1pt}
+    {\fontsize{5.4}{6.3}\selectfont Up to \textbf{2.2$\times$} kernel and \textbf{1.68$\times$} end-to-end speedup with near-FP16 quality. Learned rotations \textbf{must be orthogonal}---unconstrained ones amplify quantization error.\par}
+  }}
+
+\end{document}

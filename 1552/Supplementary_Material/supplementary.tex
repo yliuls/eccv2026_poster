@@ -1,0 +1,260 @@
+\documentclass[runningheads]{llncs}
+
+% ---------------------------------------------------------------
+% Include basic ECCV package
+ 
+% TODO REVIEW: Insert your submission number below by replacing '*****'
+% TODO FINAL: Comment out the following line for the camera-ready version
+% \usepackage[review,year=2026,ID=13479]{eccv}
+% TODO FINAL: Un-comment the following line for the camera-ready version
+\usepackage{eccv}
+
+% OPTIONAL: Un-comment the following line for a version which is easier to read
+% on small portrait-orientation screens (e.g., mobile phones, or beside other windows)
+%\usepackage[mobile]{eccv}
+
+
+% ---------------------------------------------------------------
+% Other packages
+
+% Commonly used abbreviations (\eg, \ie, \etc, \cf, \etal, etc.)
+\usepackage{eccvabbrv}
+
+% Include other packages here, before hyperref.
+\usepackage{graphicx}
+\usepackage{booktabs}
+
+% The "axessiblity" package can be found at: https://ctan.org/pkg/axessibility?lang=en
+\usepackage[accsupp]{axessibility}  % Improves PDF readability for those with disabilities.
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\setlength{\emergencystretch}{2em}
+
+\usepackage{amsfonts}
+\usepackage{tabularx}
+\usepackage{booktabs} % For \toprule, \midrule, \bottomrule
+\usepackage[table]{xcolor} % For \rowcolor
+\usepackage{multirow}
+
+% ---------------------------------------------------------------
+% Hyperref package
+
+% It is strongly recommended to use hyperref, especially for the review version.
+% Please disable hyperref *only* if you encounter grave issues.
+% hyperref with option pagebackref eases the reviewers' job, but should be disabled for the final version.
+%
+% If you comment hyperref and then uncomment it, you should delete
+% main.aux before re-running LaTeX.
+% (Or just hit 'q' on the first LaTeX run, let it finish, and you
+%  should be clear).
+
+% TODO FINAL: Comment out the following line for the camera-ready version
+%\usepackage[pagebackref,breaklinks,colorlinks,citecolor=eccvblue]{hyperref}
+% TODO FINAL: Un-comment the following line for the camera-ready version
+\usepackage{hyperref}
+
+% Support for ORCID icon
+\usepackage{orcidlink}
+
+% Tighten spacing for regular floats to reduce excess white space.
+\setlength{\textfloatsep}{8pt plus 1pt minus 2pt}
+\setlength{\floatsep}{6pt plus 1pt minus 2pt}
+\setlength{\intextsep}{8pt plus 1pt minus 2pt}
+
+
+
+
+
+\begin{document}
+
+% ---------------------------------------------------------------
+% TODO REVIEW: Replace with your title
+\title{Supplementary Material: RotateAttention: RoPE-Aware Rotation and Range Rectification for INT4 Quantized Attention in Video Generation} 
+
+% TODO REVIEW: If the paper title is too long for the running head, you can set
+% an abbreviated paper title here. If not, comment out.
+\titlerunning{Supplementary Material: RotateAttention}
+
+
+
+\newcommand{\equalcontrib}{\textsuperscript{\(\ast\)}}
+\newcommand{\corr}{\textsuperscript{\(\dagger\)}}
+
+\author{
+Yaofu Liu\inst{1}\equalcontrib \and
+Wanli Lan\inst{2}\equalcontrib \and
+Jinxi Li\inst{2}\equalcontrib \and
+Binhang Yuan\inst{1}\corr \and
+Harry Yang\inst{1}\corr
+}
+
+\authorrunning{Y.~Liu et al.}
+
+\institute{
+The Hong Kong University of Science and Technology, Hong Kong SAR, China\\
+\email{yliuls@connect.ust.hk, biyuan@ust.hk, yangharry@ust.hk}
+\and
+Independent Researcher, China
+}
+
+\maketitle
+
+\begingroup
+\renewcommand\thefootnote{\(\ast\)}
+\footnotetext{Equal contribution.}
+\renewcommand\thefootnote{\(\dagger\)}
+\footnotetext{Corresponding authors.}
+\endgroup
+
+
+
+\section{Theoretical Proof of RotateAttention Compatibility with SageAttention}
+
+\begin{theorem}
+\label{thm:orthogonal_attention}
+Let $R \in \mathbb{O}(D)$ be an orthogonal matrix, and let the query tensor $Q \in \mathbb{R}^{N \times D}$ and key tensor $K \in \mathbb{R}^{N \times D}$ be smooth tensors. Define $\bar{Q} = \mathbb{E}_0[Q]$ and $\bar{K} = \mathbb{E}_0[K]$ as the sequence-wise means. Let $\hat{Q}=QR$ and $\hat{K}=KR$. The centered inner product remains invariant under the orthogonal transformation $R$:
+\begin{align}
+(Q - \bar{Q}) (K - \bar{K})^T 
+&= \bigl((Q - \bar{Q})R\bigr) \bigl((K - \bar{K})R\bigr)^T \nonumber \\
+&= \bigl(QR - \mathbb{E}_0[QR]\bigr) \bigl(KR - \mathbb{E}_0[KR]\bigr)^T \\
+&=\bigl(\hat{Q} - \mathbb{E}_0[\hat{Q}]\bigr) \bigl(\hat{K} - \mathbb{E}_0[\hat{K}]\bigr)^T.
+\end{align}
+\end{theorem}
+
+According to \cref{thm:orthogonal_attention}, the smoothing operation and the application of the rotation matrix $R$ are commutative and compatible. To maximize computational efficiency, we apply the rotation matrix $R$ immediately following the RoPE encoding.
+
+\section{Compatibility with PAROAttention and VBench Evaluation}
+
+
+
+
+\begin{table*}[!htbp]
+  \centering
+  \footnotesize
+  \caption{Comparison of Difference Metrics and Performance Compatible with PAROAttention (Wan2.2 and HunyuanVideo)}
+  \label{tab:paro_compatibility_comparison}
+  \newcolumntype{C}{>{\centering\arraybackslash}X}
+  
+  \begin{tabularx}{\linewidth}{l l c c C C C C c}
+    \toprule
+    \multirow{2}{*}{\textbf{Model}} & \multicolumn{3}{c}{\textbf{Method}} & \multicolumn{4}{c}{\textbf{Difference Metrics}} & \multirow{2}{*}{\textbf{VBench} $\uparrow$} \\
+    \cmidrule(lr){2-4} \cmidrule(lr){5-8}
+    & Datatype & PARO & Rotate & Cosine $\uparrow$ & MSE $\downarrow$ & SSIM $\uparrow$ & PSNR $\uparrow$ & \\
+
+
+    \midrule
+    \multirow{3}{*}{\begin{tabular}{@{}l@{}}Wan2.2 \\ -I2V\end{tabular}} 
+    & \cellcolor{gray!20}FP16 & -- & -- & 1.0000 & 0.0000 & 1.0000 & $\infty$ & 0.7842 \\
+    & INT4 & \checkmark & $\times$ & 0.9812 & 568.24 & 0.7612 & 22.214 & 0.7715 \\
+    & INT4 & \checkmark & \checkmark & \textbf{0.9832} & \textbf{487.42} & \textbf{0.7853} & \textbf{23.086} & 0.7768 \\
+
+    \midrule
+    \multirow{3}{*}{\begin{tabular}{@{}l@{}}Wan2.2 \\ -T2V\end{tabular}} 
+    & \cellcolor{gray!20}FP16 & -- & -- & 1.0000 & 0.0000 & 1.0000 & $\infty$ & 0.7625 \\
+    & INT4 & \checkmark &$\times$ & 0.9584 & 1395.2 & 0.6654 & 18.572 & 0.7492 \\
+    & INT4 & \checkmark & \checkmark & \textbf{0.9592} & \textbf{1378.5} & \textbf{0.6702} & \textbf{18.694} & 0.7631 \\
+
+    \midrule
+    \multirow{3}{*}{\begin{tabular}{@{}l@{}}Hyvideo \\ -T2V\end{tabular}} 
+    & \cellcolor{gray!20}FP16 & -- & -- & 1.0000 & 0.0000 & 1.0000 & $\infty$ & 0.8054 \\
+    & INT4 & \checkmark & $\times$ & 0.9735 & 1074.8 & 0.6634 & 18.982 & 0.7912 \\
+    & INT4 & \checkmark & \checkmark & \textbf{0.9823} & \textbf{1028.6} & \textbf{0.6782} & \textbf{19.145} & 0.7985 \\
+    
+    \bottomrule
+  \end{tabularx}
+\end{table*}
+
+
+
+
+Because PAROAttention operates at the token level while the rotation and range-optimized $P$ methods are applied at the channel level, the two approaches are orthogonal and can be seamlessly combined. We integrated our recommended half-rotation and range-optimized $P$ methods into both SageAttention and PAROAttention to evaluate their combined impact.
+
+As demonstrated in \cref{tab:paro_compatibility_comparison}, combining our method with PAROAttention further enhances video quality across multiple models and metrics, achieving Vbench scores that closely approach those of FP16 attention.
+
+
+\section{Outlier Distribution in Another Model}
+
+\begin{figure}[!htbp] % h代表当前位置，t代表单栏顶部
+    \centering
+    % 第一张图片，占用单栏宽度的 47%
+    \includegraphics[width=0.47\linewidth]{Supplementary_Material/pic/hy_q.jpg}
+    \hfill % 自动分配中间的水平间距
+    \includegraphics[width=0.47\linewidth]{Supplementary_Material/pic/hy_k.jpg}
+    % \caption{\textbf{Outlier distribution of HunyuanVideo.}}
+    \caption{\small HunyuanVideo $\mathbf{Q}$/$\mathbf{K}$ outlier distributions.}
+    \label{fig:outlier}
+\end{figure}
+
+We provide the outlier distributions of $\mathbf{Q}$ and $\mathbf{K}$ in HunyuanVideo in Fig.~\ref{fig:outlier}. The results exhibit the same two patterns summarized in Sec.3 : \textbf{Spatiotemporal Segmental Incoherence} and \textbf{Cross-Matrix Symmetry}, suggesting that the observed $\mathbf{Q}$ and $\mathbf{K}$ outlier pattern is not specific to a single model.
+
+
+\section{4-step Distilled Wan2.2 with Different INT4 Ratio}
+
+We add experiments on a 4-step distilled Wan2.2-T2V from Wan-Lightning. The quantitative results are shown in Table~\ref{tab:quality_comparison_distill}, with visual examples in Fig.~\ref{fig:first_end_frames}. Even at 100\% INT4 attention, VBench remains close to FP16, while similarity to the FP16 output decreases as expected.
+
+
+\textbf{Notably}, if the objective is to preserve output-level consistency between quantized-attention videos and full-precision FP16 videos, our current method still has room for improvement on the 4-step distilled model. As shown in Table~\ref{tab:quality_comparison_distill}, quantizing only 25\% of the attention layers to INT4 already reduces the cosine similarity to the FP16 output to 0.9358, suggesting that few-step distilled video generation models are particularly sensitive to attention quantization.
+
+\begin{table}[h]
+  \centering
+  \scriptsize
+  \vspace{-0.4em}
+  \setlength{\tabcolsep}{3.2pt}
+  \renewcommand{\arraystretch}{0.92}
+  \caption{\small 4-step distilled Wan2.2-T2V with different INT4 ratios.}
+  \label{tab:quality_comparison_distill}
+  \resizebox{\columnwidth}{!}{%
+  \begin{tabular}{c c c c c c}
+    \toprule
+    \multirow{2}{*}{\textbf{INT4 Attn.}}
+    & \multicolumn{4}{c}{\textbf{Similarity to FP16}}
+    & \multirow{2}{*}{\textbf{VBench} $\uparrow$} \\
+    \cmidrule(lr){2-5}
+    & Cos. $\uparrow$ & MSE $\downarrow$ & SSIM $\uparrow$ & PSNR $\uparrow$ & \\
+    \midrule
+    0\%   & 1.0000 & 0.0    & 1.0000 & $\infty$ & 0.765 \\
+    25\%  & 0.9358 & 1341.1 & 0.5407 & 16.94    & 0.761 \\
+    50\%  & 0.9152 & 1781.3 & 0.4487 & 15.68    & 0.758 \\
+    63\%  & 0.8957 & 2180.0 & 0.4173 & 14.80    & 0.759 \\
+    100\% & 0.8772 & 2547.9 & 0.4152 & 14.19    & 0.753 \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \vspace{-0.8em}
+\end{table}
+
+
+\begin{figure}[ht]
+    \centering
+    \setlength{\tabcolsep}{1pt}
+    \begin{tabular}{ccccc}
+        \scriptsize 0\% &
+        \scriptsize 25\% &
+        \scriptsize 50\% &
+        \scriptsize 63\% &
+        \scriptsize 100\% \\
+        \includegraphics[width=0.19\linewidth]{Supplementary_Material/4_step/first_0.jpg} &
+        \includegraphics[width=0.19\linewidth]{Supplementary_Material/4_step/first_25.jpg} &
+        \includegraphics[width=0.19\linewidth]{Supplementary_Material/4_step/first_50.jpg} &
+        \includegraphics[width=0.19\linewidth]{Supplementary_Material/4_step/first_63.jpg} &
+        \includegraphics[width=0.19\linewidth]{Supplementary_Material/4_step/first_100.jpg} \\
+        \includegraphics[width=0.19\linewidth]{Supplementary_Material/4_step/end_0.jpg} &
+        \includegraphics[width=0.19\linewidth]{Supplementary_Material/4_step/end_25.jpg} &
+        \includegraphics[width=0.19\linewidth]{Supplementary_Material/4_step/end_50.jpg} &
+        \includegraphics[width=0.19\linewidth]{Supplementary_Material/4_step/end_63.jpg} &
+        \includegraphics[width=0.19\linewidth]{Supplementary_Material/4_step/end_100.jpg}
+    \end{tabular}
+    \vspace{-0.6em}
+    % \caption{\small First/End-frame samples of 4-step Distilled Wan2.2-T2V with different INT4 attention Ratios for visual quality inspection.}
+    \caption{\small First/end frames of 4-step distilled Wan2.2-T2V under different INT4 attention ratios.}
+    \label{fig:first_end_frames}
+\end{figure}
+
+
+\section{Implementation Details}
+
+The interleaved rotation follows the RoPE layout and can be fused into the RoPE kernel. For half rotation, we split $\mathbf{Q}$ and $\mathbf{K}$ into three channel segments and apply efficient element-wise multiplications. $\mathbf{Q}$ and $\mathbf{K}$ use per-token scaling, $\mathbf{V}$ uses per-group channel scaling with group size 64, and $\mathbf{P}$ uses per-block attention scaling with a fixed scale.
+
+\end{document}

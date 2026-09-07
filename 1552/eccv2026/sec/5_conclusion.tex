@@ -1,0 +1,12 @@
+
+\section{Conclusion}
+
+In this work, we propose \textbf{RotateAttention}, an efficient mixed-precision INT4 attention framework designed for DiT-based video generation models with 3D RoPE.
+Our approach introduces two core innovations: 
+(1) \textbf{RoPE-aware Rotation}, which utilizes mergeable or negligible-cost rotation matrices to effectively mitigate $\mathbf{Q}$ and $\mathbf{K}$ outliers while maintaining seamless integration with RoPE; 
+(2) \textbf{Range-optimized $\mathbf{P}$ Quantization}, which leverages fixed scales and zero-points to fully exploit the \textbf{INT4 numerical range} with minimal computational overhead. Additionally, we apply a standard Hadamard transform to $\mathbf{V}$, fused offline into the linear projections at zero inference cost.
+
+Experimental results demonstrate that \textbf{RotateAttention} achieves video generation quality nearly identical to full-precision baselines and significantly outperforms SageAttention in visual fidelity. Our INT4 attention kernel achieves a $2.2\times$ speedup at the kernel level, translating to end-to-end speedups of $1.51\times$--$1.68\times$ across the evaluated 3D-RoPE video DiTs. \textbf{RotateAttention} establishes a practical paradigm for high-performance, mixed-precision INT4 attention in 3D-RoPE video DiTs.
+
+
+\paragraph{\textbf{Limitations.}} Our rotation strategies are specifically designed for DiT-based video generation models employing 3D RoPE with segmented dimensional partitioning. Applying them to other positional encoding schemes requires adapting the rotation structure to the corresponding outlier patterns. Our evaluation covers two model families, Wan2.2 and HunyuanVideo; evaluating a broader range of architectures would further strengthen generalizability.
