@@ -47,7 +47,7 @@
  headerheight=0.12\textheight}
  % Eye Catcher
  {
-  \parbox[c]{0.22\linewidth}{\raggedright\large\bf\color{blue} ECCV 2026\\[0.2em] Submission \#1552}
+  \includegraphics[width=0.14\linewidth]{./hkust_logo_horizontal_1267x399}
  }
  % Title
 {\sc\huge\bf RotateAttention: RoPE-Aware Rotation and\\ Range Rectification for INT4 Quantized\\ Attention in Video Generation}
@@ -70,7 +70,7 @@
     \textbf{\color{blue}Contributions:}
     \begin{itemize}\compresslist
         \item \textbf{RoPE-aware Rotation} (Interleaved/Half) equalizes 3D-RoPE outliers at zero/negligible cost.
-        \item \textbf{Key finding: rotation matrices must be orthogonal}; unconstrained learned rotations amplify quantization error.
+        \item \textbf{Key finding: rotation matrices must be orthogonal}; unconstrained rotations amplify quantization error.
         \item \textbf{Range-optimized $\mathbf{P}$} and \textbf{Hadamard $\mathbf{V}$} (zero cost) complete the INT4 pipeline.
         \item Up to \textbf{2.2$\times$} kernel / \textbf{1.68$\times$} end-to-end speedup, near-FP16 quality.
     \end{itemize}
@@ -147,7 +147,9 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \headerbox{\bf\color{blue} Learned Rotation Must Be Orthogonal}{name=ortho,column=2,below=results,span=3}{
-    \textbf{\color{blue}Wan2.2 I2V.} Learned rotations improve generated frames only under the $\mathrm{O}(2)$ orthogonal constraint; unconstrained rotations amplify quantization error and visibly degrade the output.
+    \textbf{Learned rotations $\in \mathrm{O}(2)$} (orthogonal constraint).\\
+    Limited rotation space: no clear quality gain, but no degradation.\\
+    Without the constraint $\rightarrow$ degraded results.
     \begin{center}
     {\scriptsize
     \setlength{\tabcolsep}{4pt}
